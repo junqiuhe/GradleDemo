@@ -1,0 +1,65 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion rootProject.ext.android.compileSdkVersion
+    defaultConfig {
+        applicationId rootProject.ext.android.applicationId
+        minSdkVersion rootProject.ext.android.minSdkVersion
+        targetSdkVersion rootProject.ext.android.targetVersion
+        versionCode rootProject.ext.android.versionCode
+        versionName rootProject.ext.android.versionName
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+
+
+        staging{
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            matchingFallbacks = ['debug', 'release']
+        }
+    }
+
+    /**
+     * 配置产品风味.
+     */
+    flavorDimensions "tier"
+    productFlavors{
+        free{
+            dimension "tier"
+            applicationIdSuffix ".free"
+        }
+
+        pro{
+            dimension "tier"
+            applicationIdSuffix ".pro"
+        }
+    }
+}
+
+/**
+ * 添加配置依赖项
+ */
+dependencies {
+
+    //dependency on a local library module.
+    implementation project(":mylibrary")
+
+    //dependency on a local binaries
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    //dependency on a remote binaries
+    implementation rootProject.ext.dependencies["appcompat"]
+    implementation rootProject.ext.dependencies["constriant"]
+
+    testImplementation 'junit:junit:4.12'
+
+    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+}
