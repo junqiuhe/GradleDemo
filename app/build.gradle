@@ -74,6 +74,24 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
+
+        /**
+         * Android Studio 3.0及Gradle Plugin 3.0升级注意事项:
+         *
+         *      https://blog.csdn.net/codezjx/article/details/78627403
+         *
+         * 处理 app 与 library 依赖匹配问题.
+         *
+         * 情景4：若library没有任何dimension和flavor，则不需app做任何flavor的回退处理~
+         *
+         * 情形1：app中有个某个build type, 但Library却没有.
+         *
+         * (注意: 在该情形下，若library中有某个build type但app却没有，不会对app有任何印象)
+         */
+        staging{
+            initWith release
+            matchingFallbacks = ['release', 'debug']
+        }
     }
 
     flavorDimensions "api", "mode"
@@ -83,9 +101,19 @@ android {
             applicationIdSuffix ".demo"
         }
 
+        /**
+         * 处理 app 与 library 依赖匹配问题.
+         *
+         * 情形2：在同一个dimension维度下，如mode, 若app中有某个flavor但library却没有
+         *
+         * （注意：在该情景下，若library中有某个flavor但app却木有，不会对app有任何影响）
+         *
+         * for example: 同一dimension维度'mode'下，app有full,但library没有full。会编译错误.
+         */
         full{
             dimension "mode"
             applicationIdSuffix ".full"
+            matchingFallbacks = ['demo']
         }
 
         minApi24{
