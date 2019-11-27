@@ -6,41 +6,160 @@ android {
         applicationId rootProject.ext.android.applicationId
         minSdkVersion rootProject.ext.android.minSdkVersion
         targetSdkVersion rootProject.ext.android.targetVersion
-        versionCode rootProject.ext.android.versionCode
-        versionName rootProject.ext.android.versionName
+        versionCode 1
+        versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    /**
+     *
+     * Reference source: https://developer.android.google.cn/studio/build/build-variants
+     *
+     * Gradle automatically creates build variants base on your 'build types' and 'product flavors'
+     * and names the according to <product-flavor><build-type>
+     * For example:
+     * 1、demoDebug
+     * 2、demoRelease
+     * 3、fullDebug
+     * 4、fullRelease
+     *
+     *  一、Configuration buildType.
+     *  Android Studio automatically creates the debug and release buildType.
+     *
+        buildTypes{
+            debug{
+            }
+            release{
+            }
+        }
+
+        二、Configuration Product Flavors.
+        The product flavors support the same properties as 'defaultConfig'.
+        this is because 'defaultConfig' actually belongs to the 'ProductFlavor' class.
+
+        flavorDimensions "version"
+        productFlavors{
+            demo{
+                dimension "version"
+            }
+            full{
+                dimension "version"
+            }
+        }
+     */
+
+    /**
+     * Combine multiple product flavors with flavor dimensions
+     * In some cases, you may want to combine configurations from multiple product flavors.
+     * For example, you may want to create different configurations for the 'full' and 'demo' product flavors
+     * that are based on api level.
+     *
+     * Gradle does not combine product flavors that belong to the same flavor dimension.
+     *
+     * for example: the following code will creates a total of 12 build variants with the following naming scheme:
+     *
+     * build variant: [minApi24, minApi23, minApi21][demo, full][debug, release]
+     * corresponding apk: app-[minApi24, minApi23, minApi21][demo, full][debug, release].apk
+     */
     buildTypes {
 
+        debug{
+            debuggable true
+            applicationIdSuffix ".debug"
+        }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
+    }
 
+    flavorDimensions "api", "mode"
+    productFlavors{
+        demo{
+            dimension "mode"
+            applicationIdSuffix ".demo"
+        }
 
-        staging{
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-            matchingFallbacks = ['debug', 'release']
+        full{
+            dimension "mode"
+            applicationIdSuffix ".full"
+        }
+
+        minApi24{
+            dimension "api"
+            minSdkVersion 24
+            versionCode 30000 + android.defaultConfig.versionCode
+            versionNameSuffix "-minApi24"
+        }
+
+        minApi23{
+            dimension "api"
+            minSdkVersion 23
+            versionCode 20000  + android.defaultConfig.versionCode
+            versionNameSuffix "-minApi23"
+        }
+
+        minApi21{
+            dimension "api"
+            minSdkVersion 21
+            versionCode 10000  + android.defaultConfig.versionCode
+            versionNameSuffix "-minApi21"
         }
     }
 
     /**
-     * 配置产品风味.
+     * Filter minApi21demoDebug and minApi21demoRelease.
      */
-    flavorDimensions "tier"
-    productFlavors{
-        free{
-            dimension "tier"
-            applicationIdSuffix ".free"
+//    variantFilter{ variant ->
+//        def names = variant.flavors*.name
+//        if(names.contains("minApi21") && names.contains("demo")){
+//            setIgnore(true)
+//        }
+//    }
+
+    /**
+     * By default, Android Studio creates the main/ source set and directories for everything you want to share between all your build variant.
+     * However, you can create new source sets to control exactly what files Gradle compiles and packages for specific build types, product flavors and build variant.
+     *
+     * For example, you can define basic functionality in the main/ source set and use product flavor source sets to change the branding of your app for different clients.
+     * or include special permissions and logging functionality only for build variants that use the debug build type.
+     *
+     * For example: following priority
+     * 1、src/demoDebug
+     * 2、src/debug
+     * 3、src/demo
+     * 4、src/main
+     */
+    sourceSets {
+
+        demo{
+            java.srcDirs = ["src/demosrc/java"]
+            res.srcDirs = ['src/demosrc/res']
         }
 
-        pro{
-            dimension "tier"
-            applicationIdSuffix ".pro"
+        full{
+            java.srcDirs = ["src/fullsrc/java"]
+            res.srcDirs = ['src/fullsrc/res']
         }
     }
+
+    //批量修改APK名称的配置
+    applicationVariants.all { variant ->
+        variant.outputs.all{ output ->
+
+            println "ourputFile: ${output.outputFile.name}, " +
+                    "flavorName: ${variant.flavorName}, " +
+                    "buildType: ${variant.buildType.name}"
+
+            def fileName = "jackh_${variant.flavorName}_${variant.buildType.name}_${buildTime()}.apk"
+            outputFileName = fileName
+            println fileName
+        }
+    }
+}
+
+static def buildTime(){
+    return new Date().format("yyyyMMdd", TimeZone.getTimeZone("UTC"))
 }
 
 /**
