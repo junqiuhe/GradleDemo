@@ -1,0 +1,99 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion rootProject.ext.android.compileSdkVersion
+    defaultConfig {
+        applicationId rootProject.ext.android.applicationId
+        minSdkVersion rootProject.ext.android.minSdkVersion
+        targetSdkVersion rootProject.ext.android.targetVersion
+        versionCode 1
+        versionName "1.0"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    /**
+     * Configure your build for multiple apks.
+     *
+     * To configure your build for multiple apks. add a splits to your module-level 'build.gradle' file.
+     *
+     * Within the 'splits' block, provide a 'density' block that specifies how Gradle build generate pre-density apks.
+     * an 'abi(application binary interfaces)' block that specifies how gradle should generate pre-ABI APKS.
+     */
+    splits {
+
+        /**
+         *
+         * https://developer.android.google.cn/studio/build/configure-apk-splits#configure-split
+         *
+         * configure multiple apks for screen densities.
+         *
+         * enable
+         * exclude: 指定以逗号分割的密度列表，Gradle不应为此生成单独的APK.
+         *          如果要生成大多数密度的APK，但需要排除您的应用不支持的几种密度，请使用排除。
+         *
+         * reset(): 清除默认的屏幕密度列表.仅当与include元素结合使用时，才可以指定要添加的密度。
+         * include: 指定Gradle应为其生成APK的密度的逗号分隔列表。仅与reset（）结合使用以指定确切的密度列表。
+         *
+         * compatibleScreens: 指定兼容屏幕尺寸的逗号分隔列表
+         */
+
+        // Configures multiple APKs based on screen density.
+        density {
+
+            // Configures multiple APKs based on screen density.
+            enable true
+
+            // Specifies a list of screen densities Gradle should not create multiple APKs for.
+            exclude "ldpi", "xxhdpi", "xxxhdpi"
+
+            // Specifies a list of compatible screen size settings for the manifest.
+            compatibleScreens 'small', 'normal', 'large', 'xlarge'
+        }
+
+        /**
+         * Configure multiple APKs for ABIs
+         *
+         * Android Plugin for Gradle 3.1.0 and higher no longer generate APKs for the following ABIs by default: mips, mips64, and armeabi.
+         * That's because NDK r17 and higher no longer include these ABIs as supported targets.
+         *
+         * universalApk:
+         */
+
+        // Configures multiple APKs based on ABI.
+        abi {
+
+            // Enables building multiple APKs per ABI.
+            enable true
+
+            // By default all ABIs are included, so use reset() and include to specify that we only
+            // want APKs for x86 and x86_64.
+
+            // Resets the list of ABIs that Gradle should create APKs for to none.
+            reset()
+
+            // Specifies a list of ABIs that Gradle should create APKs for.
+            include "x86", "x86_64"
+
+            // Specifies that we do not want to also generate a universal APK that includes all ABIs.
+            universalApk false
+        }
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    implementation rootProject.ext.dependencies["appcompat"]
+    implementation rootProject.ext.dependencies["constriant"]
+
+    testImplementation rootProject.ext.dependencies["junit"]
+    androidTestImplementation rootProject.ext.dependencies["androidJunit"]
+    androidTestImplementation rootProject.ext.dependencies["espresso-core"]
+}

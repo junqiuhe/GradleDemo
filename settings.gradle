@@ -2,7 +2,7 @@
  * 说明: app, mylibrary介绍了如何配置gradle.
  * 以及buildTypes, productFlavors(flavorDimensions), sourceSets之间的关系以及如何使用.
  */
-//include ':app',
+//include ':app'
 //include ':mylibrary'
 
 /**
@@ -12,7 +12,12 @@
  *
  * 情形3、library中有某个dimension维度，但是app中却没有的demo.
  */
-include ':testapp'
-include ':testlibrary'
+//include ':testapp'
+//include ':testlibrary'
+
+/**
+ * build multiple apks demo
+ */
+include ':multipleapp'
 
 rootProject.name='GradleDemo'
