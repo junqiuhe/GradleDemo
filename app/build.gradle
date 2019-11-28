@@ -13,6 +13,8 @@ android {
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
+        multiDexEnabled true
+
         /**
          * 将编译变量注入清单:
          * https://developer.android.google.cn/studio/build/manifest-build-variables
@@ -82,8 +84,18 @@ android {
             debuggable true
             applicationIdSuffix ".debug"
         }
+
         release {
-            minifyEnabled false
+            /**
+             * Enables code shrinking, obfuscation and optimization for only your project's release build type.
+             */
+            minifyEnabled true
+
+            /**
+             * Enables resource shrinking
+             */
+            shrinkResources true
+
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
 
@@ -216,6 +228,9 @@ dependencies {
 
     //dependency on a local binaries
     implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    def multidex_version = "2.0.1"
+    implementation "androidx.multidex:multidex:$multidex_version"
 
     //dependency on a remote binaries
     implementation rootProject.ext.dependencies["appcompat"]

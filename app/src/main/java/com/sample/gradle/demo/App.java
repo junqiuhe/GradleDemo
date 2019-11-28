@@ -1,6 +1,9 @@
 package com.sample.gradle.demo;
 
 import android.app.Application;
+import android.content.Context;
+
+import androidx.multidex.MultiDex;
 
 /**
  * Project Name：GradleDemo
@@ -8,6 +11,12 @@ import android.app.Application;
  * Description:
  */
 public class App extends Application {
+
+    @Override
+    protected void attachBaseContext(Context base) {
+        super.attachBaseContext(base);
+        MultiDex.install(this);
+    }
 
     @Override
     public void onCreate() {
