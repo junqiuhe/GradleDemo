@@ -1,2 +1,18 @@
-include ':app', ':mylibrary'
+/**
+ * 说明: app, mylibrary介绍了如何配置gradle.
+ * 以及buildTypes, productFlavors(flavorDimensions), sourceSets之间的关系以及如何使用.
+ */
+//include ':app',
+//include ':mylibrary'
+
+/**
+ * testapp, testlibrary (Resolve build errors related to variant matching)
+ *
+ * 处理app与lib的依赖匹配问题
+ *
+ * 情形3、library中有某个dimension维度，但是app中却没有的demo.
+ */
+include ':testapp'
+include ':testlibrary'
+
 rootProject.name='GradleDemo'
