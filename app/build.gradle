@@ -12,6 +12,18 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        /**
+         * 将编译变量注入清单:
+         * https://developer.android.google.cn/studio/build/manifest-build-variables
+         *
+         * 将build.gradle文件中定义的变量插入到 AndroidManifest.xml 文件中.
+         */
+        manifestPlaceholders = [hostName: "www.sample.com"]
+
+        /**
+         * 默认情况下，在AndroidManifest.xml 中 ${applicationId} 占位符 将提供应用的 应用ID.
+         */
     }
 
     /**

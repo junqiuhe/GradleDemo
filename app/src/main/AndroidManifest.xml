@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.sample.gradle.demo">
 
     <application
@@ -14,10 +15,27 @@
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
+            <intent-filter>
+                <action android:name="${applicationId}.TRANSMOGRIFY"/>
+                <data android:scheme="http" android:host="${hostName}"/>
+            </intent-filter>
         </activity>
+
+        <!--
+            合并规则标记：
+                一、节点标记. tools:node="合并规则"
+                二、属性标记. tools:合并规则
+                三、标记选择器
+                四、替换导入库的<uses-sdk>
+                五、隐式系统权限
+        -->
+        <activity android:name=".library.ActivityOne"
+            android:screenOrientation="portrait"
+            tools:node="merge"/>
+
     </application>
 
 </manifest>

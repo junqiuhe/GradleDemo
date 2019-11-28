@@ -2,8 +2,8 @@
  * 说明: app, mylibrary介绍了如何配置gradle.
  * 以及buildTypes, productFlavors(flavorDimensions), sourceSets之间的关系以及如何使用.
  */
-//include ':app'
-//include ':mylibrary'
+include ':app'
+include ':mylibrary'
 
 /**
  * testapp, testlibrary (Resolve build errors related to variant matching)
@@ -18,6 +18,6 @@
 /**
  * build multiple apks demo
  */
-include ':multipleapp'
+//include ':multipleapp'
 
 rootProject.name='GradleDemo'
