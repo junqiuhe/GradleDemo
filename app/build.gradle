@@ -28,6 +28,25 @@ android {
          */
     }
 
+    def keyFile = file('s.keystore.temp')
+
+    Properties properties = new Properties()
+    properties.load(rootProject.file('local.properties').newDataInputStream())
+
+    def keystoreFilePath = properties.getProperty("keystore.path")
+    if(keystoreFilePath){
+        keyFile = file(keystoreFilePath)
+    }
+
+    signingConfigs {
+        release {
+            storeFile keyFile
+            storePassword properties.getProperty("keystore.password")
+            keyAlias = properties.getProperty("keystore.alias")
+            keyPassword properties.getProperty("keystore.alias_password")
+        }
+    }
+
     /**
      *
      * Reference source: https://developer.android.google.cn/studio/build/build-variants
@@ -96,6 +115,12 @@ android {
              */
             shrinkResources true
 
+            if(keyFile.exists()){
+                signingConfig signingConfigs.release
+            }else {
+                println("WITH -> buildTypes -> release: using default key")
+            }
+
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
 
@@ -113,8 +138,23 @@ android {
          * (注意: 在该情形下，若library中有某个build type但app却没有，不会对app有任何印象)
          */
         staging{
-            initWith release
-            matchingFallbacks = ['release', 'debug']
+            minifyEnabled true
+
+            shrinkResources true
+
+            if(keyFile.exists()){
+
+                println("WITH -> buildTypes -> release: using jks key")
+
+                signingConfig signingConfigs.release
+
+            }else {
+                println("WITH -> buildTypes -> release: using default key")
+            }
+
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+
+            matchingFallbacks = ['release']
         }
     }
 
